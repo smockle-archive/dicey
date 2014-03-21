@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/smockle/dicey.svg?branch=master)](https://travis-ci.org/smockle/dicey)
 Open Ports in Linux computers
 =============================
 
