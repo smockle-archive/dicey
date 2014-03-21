@@ -1,5 +1,5 @@
-#ifndef KOOPA_H
-#define KOOPA_H
+#ifndef CLIENT_H
+#define CLIENT_H
 
 #include <stdio.h>
 #include <iostream>
