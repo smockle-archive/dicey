@@ -3,3 +3,10 @@ compiler:
   - gcc
   - clang
 script: make clean && make
+notifications:
+  email:
+    recipients:
+      - clay@smockle.com
+      - bdk0004@auburn.edu
+    on_success: change # default: change
+    on_failure: always # default: always
