@@ -4,8 +4,8 @@ CC = g++
 # Compiler flags
 CFLAGS = -c
 
-dicey: client.h client.cpp
-	$(CC) client.cpp -o dicey
+client: client.h client.cpp
+	$(CC) client.cpp -o client
 
 clean:
-	rm -Rf *.o dicey
+	rm -Rf *.o client
