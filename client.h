@@ -10,7 +10,6 @@
 #include <cstring>
 
 #define PORT_NO 10022
-#define PACKET_SIZE 128
 
 typedef unsigned short ush;
 typedef bool bit;

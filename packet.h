@@ -1,6 +1,10 @@
 #ifndef CHECKSUM_H
 #define CHECKSUM_H
 
+#include <iostream>
+
+#define PACKET_SIZE 128
+
 typedef unsigned short ush;
 typedef bool bit;
 
@@ -27,7 +31,7 @@ namespace dicey {
         
             // Verify that the packet's checksum matches a checksum based on the packet's data.
             bool test_checksum();
-    }
+    };
 }
 
 #endif
