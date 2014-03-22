@@ -1,4 +1,5 @@
 #include "client.h"
+#include "packet.h"
 
 using namespace dicey;
 
@@ -15,6 +16,18 @@ int main(int argc, char* argv[]) {
 	std::string msg = "This is a test message.";
 
     std::cout << "dicey " << dicey::srv_ip_address << " " << dicey::prob_loss << " " << dicey::prob_corrupt << " " << dicey::filename << std::endl;
+
+	char testData[PACKET_SIZE];
+
+	for(int j = 0; j < PACKET_SIZE; j++){
+		if(j + 1 < strlen(msg.c_str()))
+			testData[j] = msg[j];
+		else
+			testData[j] = '\0';
+	}
+
+	Packet pkt(0, testData);
+	pkt.test_checksum();
 
 	//create socket    
 	if ((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
@@ -45,6 +58,8 @@ int main(int argc, char* argv[]) {
 		perror("Unable to send message.");
 		return 0;
 	}
+
+	
     
     return 0;
 }

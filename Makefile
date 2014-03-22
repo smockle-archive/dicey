@@ -13,8 +13,9 @@ server: packet.o server.h server.cpp
 packet.o: packet.h packet.cpp
 	$(CC) $(CFLAGS) packet.cpp
 
-all: client server
+all: client server packet.o
 
 clean:
 	rm -Rf *.o client
 	rm -Rf *.o server
+	rm -Rf *.o
