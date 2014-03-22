@@ -8,9 +8,10 @@ double prob_corrupt;
 std::string filename;
 
 struct rdt_packet{
-	int seq_num; //sequence number
-	char data[PACKET_SIZE]; //data array - 128 bytes
-	int checksum;
+	bool seq_num; // sequence number, 0 or 1
+    int checksum;
+    bool ack; // acknowledgement, 1 is ack and 0 is nak
+	char data[PACKET_SIZE]; // array, 128 bytes of data
 };
 
 int main(int argc, char* argv[]) {
@@ -30,7 +31,5 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-	
-    
     return 0;
 }
