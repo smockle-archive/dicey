@@ -12,7 +12,14 @@
 #define PORT_NO 10022
 #define PACKET_SIZE 128
 
-namespace dicey{
+typedef unsigned short ush;
+typedef bool bit;
+
+namespace dicey {
+    std::string srv_ip_address;
+    double prob_loss;
+    double prob_corrupt;
+    std::string filename;
 }
 
 #endif
