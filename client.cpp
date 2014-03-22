@@ -11,8 +11,11 @@ int main(int argc, char* argv[]) {
 	int skt;
 	struct sockaddr_in sktaddr;
 	struct sockaddr_in srvaddr;
+	socklen_t srvaddrLen = sizeof(srvaddr);
+	int rcvLen;
 	struct hostent *h;
 	std::string msg = "This is a test message.";
+	unsigned char buffer[BUFFER_SIZE];
 
     std::cout << "dicey " << dicey::srv_ip_address << " " << dicey::prob_loss << " " << dicey::prob_corrupt << " " << dicey::filename << std::endl;
 
@@ -27,6 +30,7 @@ int main(int argc, char* argv[]) {
 	sktaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	sktaddr.sin_port = htons(0);
 
+	//bind our socket
 	if (bind(skt, (struct sockaddr *)&sktaddr, sizeof(sktaddr)) < 0){
 		perror("Unable to bind socket.");
 		return 0;
@@ -37,13 +41,23 @@ int main(int argc, char* argv[]) {
 	srvaddr.sin_port = htons(PORT_NO);
 	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));
 
-	std::cout << std::endl;
-
+	//print out server ip and port for reference
 	std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << ":" << ntohs(srvaddr.sin_port) << std::endl;
 
+	//send message to server
 	if(sendto(skt, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
 		perror("Unable to send message.");
 		return 0;
+	}
+
+	//wait for response from server
+	bool hasrcv = false;
+	while(!hasrcv){
+		rcvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
+		if (rcvLen > 0){
+			buffer[rcvLen] = 0;
+			std::cout << "Received message: " << std::endl << buffer << std::endl;
+		} 
 	}
     
     return 0;

@@ -29,6 +29,11 @@ int main() {
 		if (rlen > 0){
 			buffer[rlen] = 0;
 			std::cout << "Received message: " << std::endl << buffer << std::endl;
+			std::string ack = "ACK";
+			if(sendto(skt, ack.c_str(), strlen(ack.c_str()), 0, (struct sockaddr *)&addr2, sizeof(addr2)) < 0){
+				perror("Unable to send message.");
+				return 0;
+			}
 		} 
 	}
 }
