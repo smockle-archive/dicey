@@ -10,7 +10,7 @@ std::string filename;
 struct rdt_packet{
 	bool seq_num; // sequence number, 0 or 1
     bool ack; // acknowledgement, 0 is nak and 1 is ack
-	int checksum; // checksum,
+	int checksum; // 
 	char data[PACKET_SIZE]; // array, 128 bytes of data
 };
 
