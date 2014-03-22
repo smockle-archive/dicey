@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
 	struct sockaddr_in sktaddr;
 	struct sockaddr_in srvaddr;
 	struct hostent *h;
+	std::string msg = "This is a test message.";
 
     std::cout << "dicey " << dicey::srv_ip_address << " " << dicey::prob_loss << " " << dicey::prob_corrupt << " " << dicey::filename << std::endl;
 
@@ -38,8 +39,12 @@ int main(int argc, char* argv[]) {
 
 	std::cout << std::endl;
 
-	std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << std::endl;
-	std::cout << "Port: " << ntohs(srvaddr.sin_port) << std::endl;
+	std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << ":" << ntohs(srvaddr.sin_port) << std::endl;
+
+	if(sendto(skt, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
+		perror("Unable to send message.");
+		return 0;
+	}
     
     return 0;
 }
