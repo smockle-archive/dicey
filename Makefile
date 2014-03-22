@@ -4,11 +4,14 @@ CC = g++
 # Compiler flags
 CFLAGS = -c
 
-client: client.h client.cpp
-	$(CC) client.cpp -o client
+client: packet.o client.h client.cpp
+	$(CC) packet.o client.cpp -o client
 
-server: server.cpp server.h
-	$(CC) server.cpp -o server
+server: packet.o server.h server.cpp
+	$(CC) packet.o server.cpp -o server
+
+packet.o: packet.h packet.cpp
+	$(CC) $(CFLAGS) packet.cpp
 
 all: client server
 

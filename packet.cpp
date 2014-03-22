@@ -8,12 +8,12 @@ class Packet {
     
     ush Packet::generate_checksum() {
         ush checksum = 1000;
-        cout << "DEBUG (generate_checksum): " << checksum << endl;
+        std::cout << "DEBUG (generate_checksum): " << checksum << std::endl;
         return checksum;
     }
 
     bool Packet::test_checksum() {
-        cout << "DEBUG (test_checksum): " << this.checksum == generate_checksum() << endl;
+        std::cout << "DEBUG (test_checksum): " << this.checksum == generate_checksum() << std::endl;
         return this.checksum == generate_checksum();
     }
 }
