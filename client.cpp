@@ -13,21 +13,52 @@ int main(int argc, char* argv[]) {
 	struct sockaddr_in sktaddr;
 	struct sockaddr_in srvaddr;
 	struct hostent *h;
-	std::string msg = "This is a test message.";
+	
+	//SEGMENTATION
+	//open file
+	std::ifstream dataFile;
+	dataFile.open(filename);
+	if(dataFile.is_open()){
+		//get filesize
+		long filesize;
+		int begin = dataFile.tellg();
+  		dataFile.seekg (0, std::ios::end);
+  		int end = dataFile.tellg();
+  		filesize = end - begin;
+  		dataFile.seekg(0, dataFile.beg);
+		std::cout << "DEBUG (client main): filesize = " << filesize << " bytes" << std::endl;
 
-    std::cout << "dicey " << dicey::srv_ip_address << " " << dicey::prob_loss << " " << dicey::prob_corrupt << " " << dicey::filename << std::endl;
+		if(filesize <= 20){
+			perror("File is too small.");
+			return 0;
+		}
 
-	char testData[PACKET_SIZE];
+		//calculate how many times to pull out 128 bytes
+		int numPackets = 1 + ((filesize - 1)/PACKET_SIZE);
+		std::cout << "DEBUG (client main): numPackets = " << numPackets << std::endl;
 
-	for(int j = 0; j < PACKET_SIZE; j++){
-		if(j + 1 < strlen(msg.c_str()))
-			testData[j] = msg[j];
-		else
-			testData[j] = '\0';
+		//pull out exactly 128 bytes and store in a buffer, (make sure to check for null)
+		for(int i = 0; i < numPackets; i++){
+			char pktData[PACKET_SIZE] = {0};
+			dataFile.read(pktData, PACKET_SIZE);
+			//std::cout << std::endl << "DEBUG (client main): packet" << i << " data = " << pktData << std::endl << std::endl;
+
+			Packet pkt(0, pktData);
+			pkt.test_checksum();
+			//delete[] pktData;
+		}
+		dataFile.close();
+	}
+	else{
+		std::string err = "Unable to open file " + filename;
+		perror(err.c_str());
+		return 0;
 	}
 
-	Packet pkt(0, testData);
-	pkt.test_checksum();
+
+	std::string msg = "This is a test message.";
+
+    //std::cout << "dicey " << dicey::srv_ip_address << " " << dicey::prob_loss << " " << dicey::prob_corrupt << " " << dicey::filename << std::endl;
 
 	//create socket    
 	if ((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
@@ -50,9 +81,9 @@ int main(int argc, char* argv[]) {
 	srvaddr.sin_port = htons(PORT_NO);
 	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));
 
-	std::cout << std::endl;
+	//std::cout << std::endl;
 
-	std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << ":" << ntohs(srvaddr.sin_port) << std::endl;
+	//std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << ":" << ntohs(srvaddr.sin_port) << std::endl;
 
 	if(sendto(skt, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
 		perror("Unable to send message.");

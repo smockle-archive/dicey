@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstring>
 
-#define PACKET_SIZE 128
+#define PACKET_SIZE 126
 
 typedef unsigned short ush;
 typedef bool bit;

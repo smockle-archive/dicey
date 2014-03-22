@@ -4,13 +4,14 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cstring>
 
 #define PORT_NO 10022
-#define PACKET_SIZE 128
+#define PACKET_SIZE 126
 
 typedef unsigned short ush;
 typedef bool bit;
