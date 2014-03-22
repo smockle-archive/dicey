@@ -18,7 +18,7 @@ class Packet {
     Packet(bit seq_num, char data[PACKET_SIZE]) {
         this->seq_num = seq_num;
         this->ack = 0;
-        strcpy(this->data, data);
+        std::strcpy(this->data, data);
         this->checksum = this->generate_checksum();
     }
     

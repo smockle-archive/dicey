@@ -2,6 +2,7 @@
 #define CHECKSUM_H
 
 #include <iostream>
+#include <cstring>
 
 #define PACKET_SIZE 128
 
