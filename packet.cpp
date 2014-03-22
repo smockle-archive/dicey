@@ -6,7 +6,7 @@ class Packet::Packet {
     Packet(bit seq_num, char data[PACKET_SIZE]) {
         this->seq_num = seq_num;
         this->ack = 0;
-        this->data = data;
+        strcpy(this->data, data);
         this->checksum = this->generate_checksum();
     }
     
