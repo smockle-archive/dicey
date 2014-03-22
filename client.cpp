@@ -2,7 +2,7 @@
 
 using namespace dicey;
 
-std::string ip_address;
+std::string srv_ip_address;
 double prob_loss;
 double prob_corrupt;
 std::string filename;
@@ -15,16 +15,17 @@ struct rdt_packet{
 };
 
 int main(int argc, char* argv[]) {
-    ip_address = argc > 1 ? argv[1] : "131.204.14.192";
+    srv_ip_address = argc > 1 ? argv[1] : "131.204.14.192";
     prob_loss = argc > 2 ? std::atof(argv[2]) : 0;
     prob_corrupt = argc > 3 ? std::atof(argv[3]) : 0;
     filename = argc > 4 ? argv[4] : "TestFile";
 
 	int skt;
 	struct sockaddr_in sktaddr;
+	struct sockaddr_in srvaddr;
 	struct hostent *h;
 
-    std::cout << "dicey " << ip_address << " " << prob_loss << " " << prob_corrupt << " " << filename << std::endl;
+    std::cout << "dicey " << srv_ip_address << " " << prob_loss << " " << prob_corrupt << " " << filename << std::endl;
 
 	//create socket    
 	if ((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-	memset((char *))&sktaddr, sizeof(sktaddr));
+	memset((char *)&sktaddr, 0, sizeof(sktaddr));
 	sktaddr.sin_family = AF_INET;
 	sktaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	sktaddr.sin_port = htons(0);
@@ -41,6 +42,14 @@ int main(int argc, char* argv[]) {
 		perror("Unable to bind socket.");
 		return 0;
 	}
+
+	memset((char *)&srvaddr, 0, sizeof(srvaddr));
+	srvaddr.sin_family = AF_INET;
+	srvaddr.sin_port = htons(PORT_NO);
+	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));
+
+
+
 	
     
     return 0;
