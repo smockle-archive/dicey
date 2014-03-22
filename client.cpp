@@ -2,10 +2,10 @@
 
 using namespace dicey;
 
-struct rdt_packet{
-	bool seq_num; // sequence number, 0 or 1
-    bool ack; // acknowledgement, 0 is nak and 1 is ack
-	int checksum; // 
+struct rdt_packet {
+	bit seq_num; // sequence number, 0 or 1
+    bit ack; // acknowledgement, 0 is nak and 1 is ack
+	ush checksum;
 	char data[PACKET_SIZE]; // array, 128 bytes of data
 };
 
