@@ -57,6 +57,7 @@ int main(int argc, char* argv[]) {
 		if (rcvLen > 0){
 			buffer[rcvLen] = 0;
 			std::cout << "Received message: " << std::endl << buffer << std::endl;
+			hasrcv = true;
 		} 
 	}
     
