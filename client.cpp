@@ -46,7 +46,12 @@ int main(int argc, char* argv[]) {
 	memset((char *)&srvaddr, 0, sizeof(srvaddr));
 	srvaddr.sin_family = AF_INET;
 	srvaddr.sin_port = htons(PORT_NO);
-	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));	
+	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));
+
+	std::cout << std::endl;
+
+	std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << std::endl;
+	std::cout << "Port: " << ntohs(srvaddr.sin_port) << std::endl;
     
     return 0;
 }
