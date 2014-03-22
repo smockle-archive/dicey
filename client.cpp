@@ -2,19 +2,6 @@
 
 using namespace dicey;
 
-struct rdt_packet {
-	bit seq_num; // sequence number, 0 or 1
-    bit ack; // acknowledgement, 0 is nak and 1 is ack
-	ush checksum;
-	char data[PACKET_SIZE]; // array, 128 bytes of data
-};
-
-ush make_sum(char data[PACKET_SIZE]) {
-}
-
-bool test_sum() {
-}
-
 int main(int argc, char* argv[]) {
     dicey::srv_ip_address = argc > 1 ? argv[1] : "131.204.14.192";
     dicey::prob_loss = argc > 2 ? std::atof(argv[2]) : 0;
