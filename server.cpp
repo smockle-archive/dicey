@@ -1,7 +1,5 @@
 #include "server.h"
 
-using namespace std;
-
 int main() {
 	struct sockaddr_in addr1;
 	struct sockaddr_in addr2;
