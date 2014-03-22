@@ -12,7 +12,11 @@
 #define PORT_NO 10022
 #define PACKET_SIZE 128
 
-namespace dicey{
+namespace dicey {
+    std::string srv_ip_address;
+    double prob_loss;
+    double prob_corrupt;
+    std::string filename;
 }
 
 #endif
