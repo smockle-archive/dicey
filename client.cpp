@@ -46,11 +46,7 @@ int main(int argc, char* argv[]) {
 	memset((char *)&srvaddr, 0, sizeof(srvaddr));
 	srvaddr.sin_family = AF_INET;
 	srvaddr.sin_port = htons(PORT_NO);
-	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));
-
-
-
-	
+	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));	
     
     return 0;
 }

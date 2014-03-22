@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <cstring>
 
 #define PORT_NO 10022
 #define PACKET_SIZE 128
