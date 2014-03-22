@@ -9,8 +9,8 @@ std::string filename;
 
 struct rdt_packet{
 	int seq_num; //sequence number
-	char data[PACKET_SIZE]; //data array - 128 bytes
 	int checksum;
+	char data[PACKET_SIZE]; //data array - 128 bytes
 };
 
 int main(int argc, char* argv[]) {
@@ -21,15 +21,25 @@ int main(int argc, char* argv[]) {
 
 	int skt;
 	struct sockaddr_in sktaddr;
+	struct hostent *h;
 
     std::cout << "dicey " << ip_address << " " << prob_loss << " " << prob_corrupt << " " << filename << std::endl;
 
 	//create socket    
 	if ((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
-		perror("cannot create socket");
+		perror("Unable to create socket.");
 		return 0;
 	}
 
+	memset((char *))&sktaddr, sizeof(sktaddr));
+	sktaddr.sin_family = AF_INET;
+	sktaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	sktaddr.sin_port = htons(0);
+
+	if (bind(skt, (struct sockaddr *)&sktaddr, sizeof(sktaddr)) < 0){
+		perror("Unable to bind socket.");
+		return 0;
+	}
 	
     
     return 0;
