@@ -24,6 +24,18 @@ int main() {
 		if (rlen > 0){
 			buffer[rlen] = 0;
 			std::cout << "Received message: " << std::endl << buffer << std::endl;
-		} 
+			
+			//SEND ack, squ_num
+			char * response = new char[2];
+			response[0] = buffer[0];
+			response[1] = '1';
+			if(sendto(skt, response, strlen(response), 0, (struct sockaddr *)&addr2, sizeof(addr2)) < 0){
+				perror("Unable to send ACK/NAK.");
+				return 0;
+			}
+			else
+				std::cout << "message sent";
+
+		}
 	}
 }

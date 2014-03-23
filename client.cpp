@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
   		dataFile.seekg(0, dataFile.beg);
 		//std::cout << "DEBUG (client main): filesize = " << filesize << " bytes" << std::endl;
 
-		if(filesize <= 20){
+		if(filesize <= 20000){
 			dataFile.close();
 			perror("File is too small.");
 			return 0;
@@ -40,8 +40,6 @@ int main(int argc, char* argv[]) {
 			Packet pkt(abp = !abp, pktData);
 			if(!sendPacket(pkt))
 				return 0;
-			// if (!rcvPacket())
-			// 	return 0;
 		}
 		dataFile.close();
 	}
@@ -88,7 +86,9 @@ bool dicey::sendPacket(Packet myPkt){
 		return 0;
 	}
 	else
-		std::cout << "message sent";
+		if(!rcvPacket()){
+			sendPacket(myPkt);
+		}
 	return 1;
 }
 
@@ -101,8 +101,17 @@ bool dicey::rcvPacket(){
 		std::cout << "Received " << recvLen << " bytes." << std::endl;
 		if (recvLen > 0){
 			buffer[recvLen] = 0;
-			std::cout << "Received message: " << std::endl << buffer << std::endl;
+			char ack_nak = buffer[1];
+			if (ack_nak == '1')
+			{
+				std::cout << "ACK SEQUENCE_NUM = " << buffer[0] << std::endl;
+				return 1;
+			}
+			else{
+				std::cout << "NAK SEQUENCE_NUM = " << buffer[0] << std::endl;
+				return 0;
+			}
 		} 
 	}
-	return 1;
+	return 0;
 }

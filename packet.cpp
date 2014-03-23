@@ -84,14 +84,5 @@ using namespace dicey;
         }
         std::cout << "DEBUG (Packet getPacketAsCharArray): wholePacket = " << wholePacket << std::endl;
 
-
-    // //set checksum
-    // char * checksum = new char[sizeof(ush)];
-    // ush pktChecksum = myPkt.getChecksum();
-    // memcpy(checksum, &pktChecksum, sizeof(ush));
-    // std::cout << "DEBUG (client sendPacket): checksum = " << checksum << std::endl;
-    // for(int i = 2; i < 4; i++)
-    //     wholePacket[i] = checksum[i - 2];
-
         return wholePacket;
     }
