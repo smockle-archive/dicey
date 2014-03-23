@@ -11,7 +11,7 @@
 #include <cstring>
 
 #define PORT_NO 10022
-#define PACKET_SIZE 126
+#define PACKET_SIZE 125
 #define BUFFER_SIZE 2048
 
 typedef unsigned short ush;
