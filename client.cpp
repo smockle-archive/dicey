@@ -7,6 +7,9 @@ int main(int argc, char* argv[]) {
     dicey::prob_loss = argc > 2 ? std::atof(argv[2]) : 0;
     dicey::prob_corrupt = argc > 3 ? std::atof(argv[3]) : 0;
     dicey::filename = argc > 4 ? argv[4] : "TestFile";
+
+    if(!openSocket())
+    	return 0;
 	
 	//SEGMENTATION
 	//open file
@@ -35,6 +38,8 @@ int main(int argc, char* argv[]) {
 			dataFile.read(pktData, PACKET_SIZE);
 
 			Packet pkt(abp = !abp, pktData);
+			if(!sendPacket(pkt))
+				return 0;
 		}
 		dataFile.close();
 	}
@@ -45,10 +50,23 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	std::string msg = "This is a test message.";
+	
 
-    //std::cout << "dicey " << dicey::srv_ip_address << " " << dicey::prob_loss << " " << dicey::prob_corrupt << " " << dicey::filename << std::endl;
+	// bool hasRec = false;
+	// while(!hasRec){
+	// 	int recvLen;
+	// 	recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
+	// 	std::cout << "Received " << recvLen << " bytes." << std::endl;
+	// 	if (recvLen > 0){
+	// 		buffer[recvLen] = 0;
+	// 		std::cout << "Received message: " << std::endl << buffer << std::endl;
+	// 	} 
+	// }
+    
+    return 0;
+}
 
+bool dicey::openSocket(){
 	//create socket    
 	if ((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 		perror("Unable to create socket.");
@@ -71,26 +89,14 @@ int main(int argc, char* argv[]) {
 	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));
 
 	std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << ":" << ntohs(srvaddr.sin_port) << std::endl;
+	return 1;
+}
 
+bool dicey::sendPacket(Packet myPkt){
+	std::string msg = "This is a test message.";
 	if(sendto(skt, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
 		perror("Unable to send message.");
 		return 0;
 	}
-
-	// bool hasRec = false;
-	// while(!hasRec){
-	// 	int recvLen;
-	// 	recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
-	// 	std::cout << "Received " << recvLen << " bytes." << std::endl;
-	// 	if (recvLen > 0){
-	// 		buffer[recvLen] = 0;
-	// 		std::cout << "Received message: " << std::endl << buffer << std::endl;
-	// 	} 
-	// }
-    
-    return 0;
-}
-
-void sendPacket(Packet myPkt){
-
+	return 1;
 }

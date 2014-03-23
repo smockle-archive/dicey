@@ -32,7 +32,8 @@ namespace dicey {
 	unsigned char buffer[BUFFER_SIZE];
 	bool abp = true;
 
-    void sendPacket(Packet myPkt);
+    bool openSocket();
+    bool sendPacket(Packet myPkt);
 }
 
 #endif
