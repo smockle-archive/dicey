@@ -18,6 +18,9 @@ int main() {
 		return 0;
 	}
 
+	//open file
+	std::ofstream writeStream ("TestFile srvcpy");
+
 	while(1){
 		rlen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&addr2, &addr2Len);
 		std::cout << "Received " << rlen << " bytes." << std::endl;
@@ -25,7 +28,15 @@ int main() {
 			buffer[rlen] = 0;
 			std::cout << "Received message: " << std::endl << buffer << std::endl;
 			
-			//SEND ack, squ_num
+			// Write data to file
+			char * fileData = new char[PACKET_DATA_SIZE];
+			for(int i = 0; i < PACKET_DATA_SIZE; i++){
+				fileData[i] = buffer[i + 6];
+			}
+			writeStream << fileData;
+			//std::cout << std::endl << std::endl << "DEBUG PACKET DATA = " << fileData << std::endl;
+
+			// SEND ack, squ_num
 			char * response = new char[2];
 			response[0] = buffer[0];
 			response[1] = '1';
@@ -35,7 +46,10 @@ int main() {
 			}
 			else
 				std::cout << "message sent";
-
 		}
 	}
+
+	//close file
+	writeStream << '\0';
+	writeStream.close();
 }

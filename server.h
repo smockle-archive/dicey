@@ -7,10 +7,13 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <iostream>
+#include <fstream>
 
 #include "packet.h"
 
 #define PORT_NO 10022
+#define PACKET_SIZE 128
+#define PACKET_DATA_SIZE 122
 #define BUFFER_SIZE 2048
 
 namespace dicey {

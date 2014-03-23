@@ -76,7 +76,7 @@ using namespace dicey;
             }
             wholePacket[i] = strCh[i - 2];
         }
-        std::cout << "DEBUG (Packet getPacketAsCharArray): strCh = " << strCh << std::endl;
+        //std::cout << "DEBUG (Packet getPacketAsCharArray): strCh = " << strCh << std::endl;
 
         // Assign data
         for(int j = 6; j < PACKET_SIZE; j++){

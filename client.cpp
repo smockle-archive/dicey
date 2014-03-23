@@ -14,13 +14,11 @@ int main(int argc, char* argv[]) {
 	//SEGMENTATION
 	//open file
 	std::ifstream dataFile (filename.c_str(), std::ifstream::binary);
-	//dataFile.open(filename.c_str(), ifstream::binary);
 	if(dataFile.is_open()){
 		//get filesize
   		dataFile.seekg (0, dataFile.end);
   		int filesize = dataFile.tellg();
   		dataFile.seekg(0, dataFile.beg);
-		//std::cout << "DEBUG (client main): filesize = " << filesize << " bytes" << std::endl;
 
 		if(filesize <= 20000){
 			dataFile.close();
@@ -28,11 +26,11 @@ int main(int argc, char* argv[]) {
 			return 0;
 		}
 
-		//calculate how many times to pull out 125 bytes
+		//calculate how many times to pull out 122 bytes
 		int numPackets = 1 + ((filesize - 1)/PACKET_DATA_SIZE);
 		std::cout << "DEBUG (client main): numPackets = " << numPackets << std::endl;
 
-		//pull out exactly 125 bytes and store in a buffer, (make sure to check for null)
+		//pull out exactly 122 bytes and store in a buffer, (make sure to check for null)
 		for(int i = 0; i < numPackets; i++){
 			char * pktData= new char[PACKET_DATA_SIZE];
 			dataFile.read(pktData, PACKET_DATA_SIZE);
