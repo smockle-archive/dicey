@@ -4,7 +4,8 @@
 #include <iostream>
 #include <cstring>
 
-#define PACKET_SIZE 125
+#define PACKET_SIZE 128
+#define PACKET_DATA_SIZE 124
 
 typedef unsigned short ush;
 typedef bool bit;
@@ -30,6 +31,11 @@ namespace dicey {
         
             // Verify that the packet's checksum matches a checksum based on the packet's data.
             bool test_checksum();
+
+            bit getSeqNum();
+            bit getAck();
+            ush getChecksum();
+            char  *getData();
     };
 }
 

@@ -2,7 +2,7 @@
 
 using namespace dicey;
 
-    Packet::Packet(bit seq_no, char newData[PACKET_SIZE]) {
+    Packet::Packet(bit seq_no, char newData[PACKET_DATA_SIZE]) {
         seq_num = seq_no;
         ack = 0;
         std::strcpy(data, newData);
@@ -29,4 +29,20 @@ using namespace dicey;
         bool test = checksum == generate_checksum();
         //std::cout << "DEBUG (test_checksum): " << test << std::endl;
         return test;
+    }
+
+    bit Packet::getSeqNum(){
+        return seq_num;
+    }
+
+    bit Packet::getAck(){
+        return ack;
+    }
+
+    ush Packet::getChecksum(){
+        return checksum;
+    }
+
+    char *Packet::getData(){
+        return data;
     }

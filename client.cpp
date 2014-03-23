@@ -28,14 +28,14 @@ int main(int argc, char* argv[]) {
 			return 0;
 		}
 
-		//calculate how many times to pull out 128 bytes
-		int numPackets = 1 + ((filesize - 1)/PACKET_SIZE);
+		//calculate how many times to pull out 125 bytes
+		int numPackets = 1 + ((filesize - 1)/PACKET_DATA_SIZE);
 		std::cout << "DEBUG (client main): numPackets = " << numPackets << std::endl;
 
 		//pull out exactly 125 bytes and store in a buffer, (make sure to check for null)
 		for(int i = 0; i < numPackets; i++){
-			char * pktData= new char[PACKET_SIZE];
-			dataFile.read(pktData, PACKET_SIZE);
+			char * pktData= new char[PACKET_DATA_SIZE];
+			dataFile.read(pktData, PACKET_DATA_SIZE);
 
 			Packet pkt(abp = !abp, pktData);
 			if(!sendPacket(pkt))
@@ -81,8 +81,31 @@ bool dicey::openSocket(){
 }
 
 bool dicey::sendPacket(Packet myPkt){
-	std::string msg = "This is a test message.";
-	if(sendto(skt, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
+	char * wholePacket = new char[PACKET_SIZE];
+	//set seq_num
+	if(myPkt.getSeqNum()) 
+		wholePacket[0] = '1';
+	else
+		wholePacket[0] = '0';
+	//set ack
+	if(myPkt.getAck()) 
+		wholePacket[1] = '1';
+	else
+		wholePacket[1] = '0';
+	//set checksum
+	char * checksum = new char[sizeof(ush)];
+	ush pktChecksum = myPkt.getChecksum();
+	memcpy(checksum, &pktChecksum, sizeof(ush));
+	std::cout << "DEBUG (client sendPacket): checksum = " << checksum << std::endl;
+	for(int i = 2; i < 4; i++)
+		wholePacket[i] = checksum[i - 2];
+	//set data
+	char *pktData = myPkt.getData();
+	for(int j = 4; j < PACKET_SIZE; j++)
+		wholePacket[j] = pktData[j - 4];
+	std::cout << "DEBUG (client sendPacket): packet = " << wholePacket << std::endl;
+
+	if(sendto(skt, wholePacket, strlen(wholePacket), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
 		perror("Unable to send message.");
 		return 0;
 	}
