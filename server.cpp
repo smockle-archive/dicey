@@ -1,5 +1,7 @@
 #include "server.h"
 
+using namespace dicey;
+
 int main() {
 	if((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 		perror("Unable to create socket.");
