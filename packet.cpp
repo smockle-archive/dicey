@@ -7,20 +7,20 @@ using namespace dicey;
         ack = 0;
         std::strcpy(data, newData);
         checksum = generate_checksum();
-        std::cout << std::endl << std::endl << "DEBUG (Packet::Packet): seq_num = " << seq_num << "; ack = " << ack << "; checksum = " << checksum << "; data = " << data << std::endl << std::endl;
+        //std::cout << std::endl << std::endl << "DEBUG (Packet::Packet): seq_num = " << seq_num << "; ack = " << ack << "; checksum = " << checksum << "; data = " << data << std::endl << std::endl;
     }
     
-    ush Packet::generate_checksum() {
-        ush byteTotal = 0;
+    int Packet::generate_checksum() {
+        int byteTotal = 0;
         //std::cout << "DEBUG (generate_checksum): strlen(data) = " << strlen(data) << std::endl;
         for(int i = 0; i < strlen(data); i++){
             byteTotal += data[i];
             std::cout << data[i];
         }
         //std::cout << "end" << std::endl << "DEBUG (generate_checksum): byteTotal = " << byteTotal << std::endl;
-        ush divisor = byteTotal/256;
+        int divisor = byteTotal/256;
         //std::cout << "DEBUG (generate_checksum): divisor = " << divisor << std::endl;
-        ush checksum = byteTotal - (divisor * 256);
+        checksum = byteTotal - (divisor * 256);
         //std::cout << "DEBUG (generate_checksum): " << checksum << std::endl;
         return checksum;
     }
@@ -39,10 +39,59 @@ using namespace dicey;
         return ack;
     }
 
-    ush Packet::getChecksum(){
+    int Packet::getChecksum(){
         return checksum;
     }
 
     char *Packet::getData(){
         return data;
+    }
+
+    // Computes and returns the char * representation of entire packet.
+    char * Packet::getPacketAsCharArray(){
+        //FORMAT - [SEQ_NO, ACK, CHECKSUM0, CHECKSUM1, CHECKSUM2, CHECKSUM3, DATA0, ..., DATA122]
+        char * wholePacket = new char[PACKET_SIZE];
+
+        // Assign sequence number
+        if(seq_num)
+            wholePacket[0] = '1';
+        else
+            wholePacket[0] = '0';
+        //std::cout << "DEBUG (Packet getPacketAsCharArray): wholePacket[0] = " << wholePacket[0] << std::endl;
+
+        // Assign ACK/NAK
+        if(ack)
+            wholePacket[1] = '1';
+        else
+            wholePacket[1] = '0';
+        //std::cout << "DEBUG (Packet getPacketAsCharArray): wholePacket[1] = " << wholePacket[1] << std::endl;
+
+        // Assign checksum
+        char * strCh = new char[sizeof(int)];
+        sprintf(strCh, "%4d", checksum);
+        for(int i = 2; i < 6; i++){
+            if (strCh[i - 2] == ' '){
+                wholePacket[i] = '0';
+                continue;
+            }
+            wholePacket[i] = strCh[i - 2];
+        }
+        std::cout << "DEBUG (Packet getPacketAsCharArray): strCh = " << strCh << std::endl;
+
+        // Assign data
+        for(int j = 6; j < PACKET_SIZE; j++){
+            wholePacket[j] = data[j - 6];
+        }
+        std::cout << "DEBUG (Packet getPacketAsCharArray): wholePacket = " << wholePacket << std::endl;
+
+
+    // //set checksum
+    // char * checksum = new char[sizeof(ush)];
+    // ush pktChecksum = myPkt.getChecksum();
+    // memcpy(checksum, &pktChecksum, sizeof(ush));
+    // std::cout << "DEBUG (client sendPacket): checksum = " << checksum << std::endl;
+    // for(int i = 2; i < 4; i++)
+    //     wholePacket[i] = checksum[i - 2];
+
+        return wholePacket;
     }

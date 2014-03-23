@@ -8,6 +8,8 @@
 #include <string.h>
 #include <iostream>
 
+#include "packet.h"
+
 #define PORT_NO 10022
 #define BUFFER_SIZE 2048
 

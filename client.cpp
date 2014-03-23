@@ -81,31 +81,9 @@ bool dicey::openSocket(){
 }
 
 bool dicey::sendPacket(Packet myPkt){
-	char * wholePacket = new char[PACKET_SIZE];
-	//set seq_num
-	if(myPkt.getSeqNum()) 
-		wholePacket[0] = '1';
-	else
-		wholePacket[0] = '0';
-	//set ack
-	if(myPkt.getAck()) 
-		wholePacket[1] = '1';
-	else
-		wholePacket[1] = '0';
-	//set checksum
-	char * checksum = new char[sizeof(ush)];
-	ush pktChecksum = myPkt.getChecksum();
-	memcpy(checksum, &pktChecksum, sizeof(ush));
-	std::cout << "DEBUG (client sendPacket): checksum = " << checksum << std::endl;
-	for(int i = 2; i < 4; i++)
-		wholePacket[i] = checksum[i - 2];
-	//set data
-	char *pktData = myPkt.getData();
-	for(int j = 4; j < PACKET_SIZE; j++)
-		wholePacket[j] = pktData[j - 4];
-	std::cout << "DEBUG (client sendPacket): packet = " << wholePacket << std::endl;
+	char * packetAsArray = myPkt.getPacketAsCharArray();
 
-	if(sendto(skt, wholePacket, strlen(wholePacket), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
+	if(sendto(skt, packetAsArray, strlen(packetAsArray), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
 		perror("Unable to send message.");
 		return 0;
 	}
