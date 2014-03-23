@@ -10,6 +10,8 @@
 #include <arpa/inet.h>
 #include <cstring>
 
+#include "packet.h"
+
 #define PORT_NO 10022
 #define PACKET_SIZE 125
 #define BUFFER_SIZE 2048
@@ -22,6 +24,15 @@ namespace dicey {
     double prob_loss;
     double prob_corrupt;
     std::string filename;
+    int skt;
+	struct sockaddr_in sktaddr;
+	struct sockaddr_in srvaddr;
+	socklen_t srvaddrLen = sizeof(srvaddr);
+	struct hostent *h;
+	unsigned char buffer[BUFFER_SIZE];
+	bool abp = true;
+
+    void sendPacket(Packet myPkt);
 }
 
 #endif

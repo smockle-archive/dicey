@@ -1,5 +1,4 @@
 #include "client.h"
-#include "packet.h"
 
 using namespace dicey;
 
@@ -8,14 +7,6 @@ int main(int argc, char* argv[]) {
     dicey::prob_loss = argc > 2 ? std::atof(argv[2]) : 0;
     dicey::prob_corrupt = argc > 3 ? std::atof(argv[3]) : 0;
     dicey::filename = argc > 4 ? argv[4] : "TestFile";
-
-	int skt;
-	struct sockaddr_in sktaddr;
-	struct sockaddr_in srvaddr;
-	socklen_t srvaddrLen = sizeof(srvaddr);
-	struct hostent *h;
-	unsigned char buffer[BUFFER_SIZE];
-	bool abp = true;
 	
 	//SEGMENTATION
 	//open file
@@ -98,4 +89,8 @@ int main(int argc, char* argv[]) {
 	// }
     
     return 0;
+}
+
+void sendPacket(Packet myPkt){
+
 }
