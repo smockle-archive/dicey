@@ -1,13 +1,6 @@
 #include "server.h"
 
 int main() {
-	struct sockaddr_in addr1;
-	struct sockaddr_in addr2;
-	socklen_t addr2Len = sizeof(addr2);
-	int rlen;
-	int skt;
-	unsigned char buffer[BUFFER_SIZE];
-
 	if((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 		perror("Unable to create socket.");
 		return 0;

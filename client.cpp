@@ -40,6 +40,8 @@ int main(int argc, char* argv[]) {
 			Packet pkt(abp = !abp, pktData);
 			if(!sendPacket(pkt))
 				return 0;
+			// if (!rcvPacket())
+			// 	return 0;
 		}
 		dataFile.close();
 	}
@@ -48,20 +50,6 @@ int main(int argc, char* argv[]) {
 		perror(err.c_str());
 		return 0;
 	}
-
-
-	
-
-	// bool hasRec = false;
-	// while(!hasRec){
-	// 	int recvLen;
-	// 	recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
-	// 	std::cout << "Received " << recvLen << " bytes." << std::endl;
-	// 	if (recvLen > 0){
-	// 		buffer[recvLen] = 0;
-	// 		std::cout << "Received message: " << std::endl << buffer << std::endl;
-	// 	} 
-	// }
     
     return 0;
 }
@@ -97,6 +85,23 @@ bool dicey::sendPacket(Packet myPkt){
 	if(sendto(skt, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
 		perror("Unable to send message.");
 		return 0;
+	}
+	else
+		std::cout << "message sent";
+	return 1;
+}
+
+bool dicey::rcvPacket(){
+	bool hasRec = false;
+	while(!hasRec){
+		//IMPLEMENT TIMER HERE to prevent infinite loop
+		int recvLen;
+		recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
+		std::cout << "Received " << recvLen << " bytes." << std::endl;
+		if (recvLen > 0){
+			buffer[recvLen] = 0;
+			std::cout << "Received message: " << std::endl << buffer << std::endl;
+		} 
 	}
 	return 1;
 }

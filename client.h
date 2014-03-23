@@ -34,6 +34,7 @@ namespace dicey {
 
     bool openSocket();
     bool sendPacket(Packet myPkt);
+    bool rcvPacket();
 }
 
 #endif
