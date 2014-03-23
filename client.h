@@ -12,6 +12,7 @@
 
 #define PORT_NO 10022
 #define PACKET_SIZE 126
+#define BUFFER_SIZE 2048
 
 typedef unsigned short ush;
 typedef bool bit;

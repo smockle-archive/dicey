@@ -12,23 +12,23 @@ int main(int argc, char* argv[]) {
 	int skt;
 	struct sockaddr_in sktaddr;
 	struct sockaddr_in srvaddr;
+	socklen_t srvaddrLen = sizeof(srvaddr);
 	struct hostent *h;
+	unsigned char buffer[BUFFER_SIZE];
 	
 	//SEGMENTATION
 	//open file
-	std::ifstream dataFile;
-	dataFile.open(filename);
+	std::ifstream dataFile (filename.c_str(), std::ifstream::binary);
+	//dataFile.open(filename.c_str(), ifstream::binary);
 	if(dataFile.is_open()){
 		//get filesize
-		long filesize;
-		int begin = dataFile.tellg();
-  		dataFile.seekg (0, std::ios::end);
-  		int end = dataFile.tellg();
-  		filesize = end - begin;
+  		dataFile.seekg (0, dataFile.end);
+  		int filesize = dataFile.tellg();
   		dataFile.seekg(0, dataFile.beg);
-		std::cout << "DEBUG (client main): filesize = " << filesize << " bytes" << std::endl;
+		//std::cout << "DEBUG (client main): filesize = " << filesize << " bytes" << std::endl;
 
 		if(filesize <= 20){
+			dataFile.close();
 			perror("File is too small.");
 			return 0;
 		}
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
 		//pull out exactly 128 bytes and store in a buffer, (make sure to check for null)
 		for(int i = 0; i < numPackets; i++){
-			char pktData[PACKET_SIZE] = {0};
+			char * pktData= new char[PACKET_SIZE];
 			dataFile.read(pktData, PACKET_SIZE);
 			//std::cout << std::endl << "DEBUG (client main): packet" << i << " data = " << pktData << std::endl << std::endl;
 
@@ -90,7 +90,16 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 
-	
+	// bool hasRec = false;
+	// while(!hasRec){
+	// 	int recvLen;
+	// 	recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
+	// 	std::cout << "Received " << recvLen << " bytes." << std::endl;
+	// 	if (recvLen > 0){
+	// 		buffer[recvLen] = 0;
+	// 		std::cout << "Received message: " << std::endl << buffer << std::endl;
+	// 	} 
+	// }
     
     return 0;
 }

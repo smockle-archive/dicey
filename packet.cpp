@@ -7,7 +7,7 @@ using namespace dicey;
         ack = 0;
         std::strcpy(data, newData);
         checksum = generate_checksum();
-        std::cout << std::endl << std::endl << "DEBUG (Packet::Packet): seq_num = " << seq_num << "; ack = " << ack << "; checksum = " << checksum << "; data = " << data << std::endl << std::endl;
+        //std::cout << std::endl << std::endl << "DEBUG (Packet::Packet): seq_num = " << seq_num << "; ack = " << ack << "; checksum = " << checksum << "; data = " << data << std::endl << std::endl;
     }
     
     ush Packet::generate_checksum() {
