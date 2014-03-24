@@ -4,8 +4,8 @@ using namespace dicey;
 
 int main(int argc, char* argv[]) {
     dicey::srv_ip_address = argc > 1 ? argv[1] : "131.204.14.192";
-    dicey::prob_loss = argc > 2 ? std::atof(argv[2]) : 0;
-    dicey::prob_corrupt = argc > 3 ? std::atof(argv[3]) : 0;
+    dicey::prob_loss = argc > 2 ? std::atof(argv[2]) : 0.2;
+    dicey::prob_corrupt = argc > 3 ? std::atof(argv[3]) : 0.2;
     dicey::filename = argc > 4 ? argv[4] : "TestFile";
 
     if(!openSocket())
@@ -38,9 +38,9 @@ int main(int argc, char* argv[]) {
 			dataFile.read(pktData, PACKET_DATA_SIZE);
 
 			Packet pkt(abp = !abp, pktData);
-			if(!sendPacket(pkt))
-				return 0;
+			gremlin(pkt);
 		}
+		std::cout << std::endl << std::endl << "DEBUG client main corrupted = " << corrupted << "; lost = " << lost << "; passed = " << passed << std::endl;
 		dataFile.close();
 	}
 	else{
@@ -86,21 +86,30 @@ bool dicey::sendPacket(Packet myPkt){
 		return 0;
 	}
 	else
+	{
 		std::cout << std::endl << std::endl << "Sending Packet: seq_num = " << myPkt.getSeqNum() << "; ack = " << myPkt.getAck() << "; checksum = " << myPkt.getChecksum() << "; data = " << myPkt.getData() << std::endl;
-		if(!rcvPacket()){
-			sendPacket(myPkt);
-		}
+	}
 	return 1;
 }
 
 bool dicey::rcvPacket(){
-	timeout.tv_usec = 20;
-	if(setsockopt(skt, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&timeout,sizeof(struct timeval)) < 0){
+	int rcvPoll = 0;
+	struct pollfd ufds;
+	time_t timer;
+
+	ufds.fd = skt;
+	ufds.events = POLLIN;
+	rcvPoll = poll(&ufds, 1, 20);
+
+	if( rcvPoll == -1 ) {
+		perror("Unable to poll socket.");
 		return 0;
-	}
-	bool hasRec = false;
-	while(!hasRec){
-		setsockopt(skt, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&timeout,sizeof(struct timeval));
+	} 
+	else if( rcvPoll == 0 ) {
+		perror("Timeout");
+		return 0;
+	} 
+	else {
 		int recvLen;
 		recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
 		if (recvLen > 0){
@@ -120,6 +129,43 @@ bool dicey::rcvPacket(){
 	return 0;
 }
 
-void dicey::gremlin(){
+void dicey::gremlin(Packet gremPkt){
+	int choice = rand() % 10;
+	int corruptChance = (int)(prob_corrupt * 10);
+	int lossChance = (int)(prob_loss * 10);
+	int passChance = 10 - (corruptChance + lossChance);
+	char * options = new char[10];
+	for(int cor = 0; cor < corruptChance; cor++){
+		options[cor] = CORRUPT_CHOICE;
+	}
+	for(int los = 0; los < lossChance; los++){
+		options[los + corruptChance] = LOSS_CHOICE;
+	}
+	for(int pas = 0; pas < passChance; pas++){
+		options[pas + (lossChance + corruptChance)] = PASS_CHOICE;
+	}
+	//corruption
+	if(options[choice] == CORRUPT_CHOICE){
+		corrupted++;
+		std::cout << std::endl << "DEBUG gremlin CORRUPTION" << std::endl;
+		sendPacket(gremPkt);
+	}
 
+	//loss
+	else if(options[choice] == LOSS_CHOICE){
+		std::cout << std::endl << "DEBUG gremlin LOSS" << std::endl;
+		lost++;
+	}
+
+	//pass
+	else if(options[choice] == PASS_CHOICE){
+		std::cout << std::endl << "DEBUG gremlin PASS" << std::endl;
+		passed++;
+		sendPacket(gremPkt);
+	}
+	else
+		std::cout << std::endl << "DEBUG gremlin TRAP options[choice] = " << options[choice] << std::endl;
+
+	if(!rcvPacket())
+			gremlin(gremPkt);	
 }

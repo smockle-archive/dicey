@@ -25,7 +25,6 @@ namespace dicey {
 	int skt;
 	bit expectedSeq = 1;
 	unsigned char buffer[BUFFER_SIZE];
-	bool errorDetect(Packet rcvPacket);
 }
 
 #endif

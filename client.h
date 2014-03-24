@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <cstring>
+#include <sys/poll.h>
 
 #include "packet.h"
 
@@ -17,6 +18,9 @@
 #define PACKET_SIZE 128
 #define PACKET_DATA_SIZE 122
 #define BUFFER_SIZE 2048
+#define CORRUPT_CHOICE '0'
+#define LOSS_CHOICE '1'
+#define PASS_CHOICE '2'
 
 typedef unsigned short ush;
 typedef bool bit;
@@ -34,11 +38,14 @@ namespace dicey {
 	struct hostent *h;
 	unsigned char buffer[BUFFER_SIZE];
 	bool abp = true;
+	int corrupted = 0;
+	int lost = 0;
+	int passed = 0;
 
     bool openSocket();
     bool sendPacket(Packet myPkt);
     bool rcvPacket();
-    void gremlin();
+    void gremlin(Packet gremPkt);
 }
 
 #endif

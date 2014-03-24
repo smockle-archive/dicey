@@ -105,9 +105,5 @@ int main() {
 	//close file
 	writeStream << '\0';
 	writeStream.close();
-	std::cout << std::endl << "Packets received: " << rcvPkts << "; Packets served: " << srvPkts << std::endl; 
-}
-
-bool dicey::errorDetect(Packet rcvPkt){
-	return 1;
+	std::cout << std::endl << "PUT Successful. Packets received: " << rcvPkts << "; Packets served: " << srvPkts << std::endl; 
 }
