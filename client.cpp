@@ -1,5 +1,4 @@
 #include "client.h"
-#include "packet.h"
 
 using namespace dicey;
 
@@ -9,26 +8,51 @@ int main(int argc, char* argv[]) {
     dicey::prob_corrupt = argc > 3 ? std::atof(argv[3]) : 0;
     dicey::filename = argc > 4 ? argv[4] : "TestFile";
 
-	int skt;
-	struct sockaddr_in sktaddr;
-	struct sockaddr_in srvaddr;
-	struct hostent *h;
-	std::string msg = "This is a test message.";
+    if(!openSocket())
+    	return 0;
+	
+	std::cout << "PUT " << filename << std::endl << std::endl;
 
-    std::cout << "dicey " << dicey::srv_ip_address << " " << dicey::prob_loss << " " << dicey::prob_corrupt << " " << dicey::filename << std::endl;
+	//SEGMENTATION
+	//open file
+	std::ifstream dataFile (filename.c_str(), std::ifstream::binary);
+	if(dataFile.is_open()){
+		//get filesize
+  		dataFile.seekg (0, dataFile.end);
+  		int filesize = dataFile.tellg();
+  		dataFile.seekg(0, dataFile.beg);
 
-	char testData[PACKET_SIZE];
+		if(filesize <= 20000){
+			dataFile.close();
+			perror("File is too small.");
+			return 0;
+		}
 
-	for(int j = 0; j < PACKET_SIZE; j++){
-		if(j + 1 < strlen(msg.c_str()))
-			testData[j] = msg[j];
-		else
-			testData[j] = '\0';
+		//calculate how many times to pull out 122 bytes
+		int numPackets = 1 + ((filesize - 1)/PACKET_DATA_SIZE);
+		//std::cout << "DEBUG (client main): numPackets = " << numPackets << std::endl;
+
+		//pull out exactly 122 bytes and store in a buffer, (make sure to check for null)
+		for(int i = 0; i < numPackets; i++){
+			char * pktData= new char[PACKET_DATA_SIZE];
+			dataFile.read(pktData, PACKET_DATA_SIZE);
+
+			Packet pkt(abp = !abp, pktData);
+			if(!sendPacket(pkt))
+				return 0;
+		}
+		dataFile.close();
 	}
+	else{
+		std::string err = "Unable to open file " + filename;
+		perror(err.c_str());
+		return 0;
+	}
+    
+    return 0;
+}
 
-	Packet pkt(0, testData);
-	pkt.test_checksum();
-
+bool dicey::openSocket(){
 	//create socket    
 	if ((skt = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
 		perror("Unable to create socket.");
@@ -50,16 +74,52 @@ int main(int argc, char* argv[]) {
 	srvaddr.sin_port = htons(PORT_NO);
 	inet_pton(AF_INET, srv_ip_address.c_str(), &(srvaddr.sin_addr));
 
-	std::cout << std::endl;
-
 	std::cout << "Server IP: " << inet_ntoa(srvaddr.sin_addr) << ":" << ntohs(srvaddr.sin_port) << std::endl;
+	return 1;
+}
 
-	if(sendto(skt, msg.c_str(), strlen(msg.c_str()), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
+bool dicey::sendPacket(Packet myPkt){
+	char * packetAsArray = myPkt.getPacketAsCharArray();
+
+	if(sendto(skt, packetAsArray, strlen(packetAsArray), 0, (struct sockaddr *)&srvaddr, sizeof(srvaddr)) < 0){
 		perror("Unable to send message.");
 		return 0;
 	}
+	else
+		std::cout << std::endl << std::endl << "Sending Packet: seq_num = " << myPkt.getSeqNum() << "; ack = " << myPkt.getAck() << "; checksum = " << myPkt.getChecksum() << "; data = " << myPkt.getData() << std::endl;
+		if(!rcvPacket()){
+			sendPacket(myPkt);
+		}
+	return 1;
+}
 
-	
-    
-    return 0;
+bool dicey::rcvPacket(){
+	timeout.tv_usec = 20;
+	if(setsockopt(skt, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&timeout,sizeof(struct timeval)) < 0){
+		return 0;
+	}
+	bool hasRec = false;
+	while(!hasRec){
+		setsockopt(skt, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&timeout,sizeof(struct timeval));
+		int recvLen;
+		recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
+		if (recvLen > 0){
+			buffer[recvLen] = 0;
+			char ack_nak = buffer[1];
+			if (ack_nak == '1')
+			{
+				std::cout << "Server Message: ACK SEQUENCE_NUM = " << buffer[0] << std::endl << std::endl;
+				return 1;
+			}
+			else{
+				std::cout << "Server Message: NAK SEQUENCE_NUM = " << buffer[0] << std::endl << std::endl;
+				return 0;
+			}
+		} 
+	}
+	return 0;
+}
+
+void dicey::gremlin(){
+
 }

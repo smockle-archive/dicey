@@ -3,8 +3,10 @@
 
 #include <iostream>
 #include <cstring>
+#include <cstdio>
 
 #define PACKET_SIZE 128
+#define PACKET_DATA_SIZE 122
 
 typedef unsigned short ush;
 typedef bool bit;
@@ -17,7 +19,7 @@ namespace dicey {
             // Whether the packet was received successfully/acknowledged. (0/nak or 1/ack)
             bit ack;
             // Checksum based on the packet's data.
-            ush checksum;
+            int checksum;
             // 128 bytes of data.
             char data[PACKET_SIZE];
         
@@ -26,10 +28,18 @@ namespace dicey {
             Packet(bit seq_num, char data[PACKET_SIZE]);
         
             // Create a checksum based on the packet's data.
-            ush generate_checksum();
+            int generate_checksum();
         
             // Verify that the packet's checksum matches a checksum based on the packet's data.
             bool test_checksum();
+
+            bit getSeqNum();
+            bit getAck();
+            int getChecksum();
+            char * getData();
+            char * getPacketAsCharArray();
+            void setAck(char ackBit);
+            void setChecksum(int newChecksum);
     };
 }
 
