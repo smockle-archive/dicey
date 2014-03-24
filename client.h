@@ -27,6 +27,7 @@ namespace dicey {
     double prob_corrupt;
     std::string filename;
     int skt;
+    struct timeval timeout; 
 	struct sockaddr_in sktaddr;
 	struct sockaddr_in srvaddr;
 	socklen_t srvaddrLen = sizeof(srvaddr);
@@ -37,6 +38,7 @@ namespace dicey {
     bool openSocket();
     bool sendPacket(Packet myPkt);
     bool rcvPacket();
+    void gremlin();
 }
 
 #endif

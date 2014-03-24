@@ -11,6 +11,8 @@ int main(int argc, char* argv[]) {
     if(!openSocket())
     	return 0;
 	
+	std::cout << "PUT " << filename << std::endl << std::endl;
+
 	//SEGMENTATION
 	//open file
 	std::ifstream dataFile (filename.c_str(), std::ifstream::binary);
@@ -28,7 +30,7 @@ int main(int argc, char* argv[]) {
 
 		//calculate how many times to pull out 122 bytes
 		int numPackets = 1 + ((filesize - 1)/PACKET_DATA_SIZE);
-		std::cout << "DEBUG (client main): numPackets = " << numPackets << std::endl;
+		//std::cout << "DEBUG (client main): numPackets = " << numPackets << std::endl;
 
 		//pull out exactly 122 bytes and store in a buffer, (make sure to check for null)
 		for(int i = 0; i < numPackets; i++){
@@ -84,6 +86,7 @@ bool dicey::sendPacket(Packet myPkt){
 		return 0;
 	}
 	else
+		std::cout << std::endl << std::endl << "Sending Packet: seq_num = " << myPkt.getSeqNum() << "; ack = " << myPkt.getAck() << "; checksum = " << myPkt.getChecksum() << "; data = " << myPkt.getData() << std::endl;
 		if(!rcvPacket()){
 			sendPacket(myPkt);
 		}
@@ -91,25 +94,32 @@ bool dicey::sendPacket(Packet myPkt){
 }
 
 bool dicey::rcvPacket(){
+	timeout.tv_usec = 20;
+	if(setsockopt(skt, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&timeout,sizeof(struct timeval)) < 0){
+		return 0;
+	}
 	bool hasRec = false;
 	while(!hasRec){
-		//IMPLEMENT TIMER HERE to prevent infinite loop
+		setsockopt(skt, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&timeout,sizeof(struct timeval));
 		int recvLen;
 		recvLen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&srvaddr, &srvaddrLen);
-		std::cout << "Received " << recvLen << " bytes." << std::endl;
 		if (recvLen > 0){
 			buffer[recvLen] = 0;
 			char ack_nak = buffer[1];
 			if (ack_nak == '1')
 			{
-				std::cout << "ACK SEQUENCE_NUM = " << buffer[0] << std::endl;
+				std::cout << "Server Message: ACK SEQUENCE_NUM = " << buffer[0] << std::endl << std::endl;
 				return 1;
 			}
 			else{
-				std::cout << "NAK SEQUENCE_NUM = " << buffer[0] << std::endl;
+				std::cout << "Server Message: NAK SEQUENCE_NUM = " << buffer[0] << std::endl << std::endl;
 				return 0;
 			}
 		} 
 	}
 	return 0;
+}
+
+void dicey::gremlin(){
+
 }

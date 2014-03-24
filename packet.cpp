@@ -54,7 +54,7 @@ using namespace dicey;
         return checksum;
     }
 
-    char *Packet::getData(){
+    char * Packet::getData(){
         return data;
     }
 
@@ -93,7 +93,7 @@ using namespace dicey;
         for(int j = 6; j < PACKET_SIZE; j++){
             wholePacket[j] = data[j - 6];
         }
-        std::cout << "DEBUG (Packet getPacketAsCharArray): wholePacket = " << wholePacket << std::endl;
+        //std::cout << "DEBUG (Packet getPacketAsCharArray): wholePacket = " << wholePacket << std::endl;
 
         return wholePacket;
     }

@@ -26,13 +26,11 @@ int main() {
 	bit endPkts = 0;
 	while(!endPkts){
 		rlen = recvfrom(skt, buffer, BUFFER_SIZE, 0, (struct sockaddr *)&addr2, &addr2Len);
-		std::cout << "Received " << rlen << " bytes." << std::endl;
 		if (rlen > 0){
 			if (rlen < 128)
 				endPkts = 1;
 			rcvPkts++;
 			buffer[rlen] = 0;
-			std::cout << "Received message: " << std::endl << buffer << std::endl;
 			
 			// Create packet from received data
 			bit serverSeq = 0;
@@ -48,6 +46,9 @@ int main() {
 			for(int j = 0; j < sizeof(int); j++){
 				dataChecksum[j] = buffer[j + 2];
 			}
+
+			std::cout << std::endl << std::endl << "Received Packet: seq_num = " << serverPkt.getSeqNum() << "; ack = " << serverPkt.getAck() << "; checksum = " << serverPkt.getChecksum() << "; data = " << serverPkt.getData() << std::endl << std::endl;
+
 			// Calculate checksum based on received data and compare to checksum received from client
 			int calcChecksum = atoi(dataChecksum);
 			serverPkt.setChecksum(calcChecksum);
@@ -63,13 +64,13 @@ int main() {
 						return 0;
 					}
 					else
-						std::cout << "NAK sent";
+						std::cout << std::endl << "NAK sent";
 				}
 				else{
 					srvPkts++;
 					//pass, send ack
 					// Write data to file
-					writeStream << fileData;
+					writeStream.write(fileData, strlen(fileData));
 					//std::cout << std::endl << std::endl << "DEBUG PACKET DATA = " << fileData << std::endl;
 
 					// SEND ack, squ_num
@@ -81,7 +82,7 @@ int main() {
 						return 0;
 					}
 					else
-						std::cout << "ACK sent";
+						std::cout << std::endl << "ACK sent" << std::endl;
 				}
 			}
 			else{
@@ -96,7 +97,7 @@ int main() {
 					return 0;
 				}
 				else
-					std::cout << "NAK sent";
+					std::cout << std::endl << "NAK sent" << std::endl;
 			}
 		}
 	}
