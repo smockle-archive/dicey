@@ -3,6 +3,7 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -22,7 +23,9 @@ namespace dicey {
 	socklen_t addr2Len = sizeof(addr2);
 	int rlen;
 	int skt;
+	bit expectedSeq = 1;
 	unsigned char buffer[BUFFER_SIZE];
+	bool errorDetect(Packet rcvPacket);
 }
 
 #endif

@@ -31,12 +31,23 @@ using namespace dicey;
         return test;
     }
 
+    void Packet::setAck(char ackBit){
+        if(ackBit == '0')
+            ack = 0;
+        else
+            ack = 1;
+    }
+
     bit Packet::getSeqNum(){
         return seq_num;
     }
 
     bit Packet::getAck(){
         return ack;
+    }
+
+    void Packet::setChecksum(int newChecksum){
+        checksum = newChecksum;
     }
 
     int Packet::getChecksum(){

@@ -38,6 +38,8 @@ namespace dicey {
             int getChecksum();
             char * getData();
             char * getPacketAsCharArray();
+            void setAck(char ackBit);
+            void setChecksum(int newChecksum);
     };
 }
 
